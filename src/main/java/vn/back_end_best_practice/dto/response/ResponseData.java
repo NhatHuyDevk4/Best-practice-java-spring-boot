@@ -1,7 +1,10 @@
 package vn.back_end_best_practice.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
+import lombok.Data;
 
+@Builder
 public class ResponseData <T>{
     private final  int status;
     private final String message;

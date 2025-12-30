@@ -21,3 +21,6 @@ openapi:
     server: http://localhost:${server.port}
     title: Backend service
     version: 1.0.0
+
+jwt:
+  signerKey: "2b418bf6267ab62bce4db459485786649d1c5dfe7feeb87de19d24709d8a91a9"
