@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.back_end_best_practice.dto.request.UserCreationRequest;
 import vn.back_end_best_practice.dto.request.UserUpdateRequest;
@@ -30,6 +32,8 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTS);
         }
         User user = userMapper.toUser(request);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
     }
 
