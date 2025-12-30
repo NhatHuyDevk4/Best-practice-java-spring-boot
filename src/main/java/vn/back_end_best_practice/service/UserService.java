@@ -32,8 +32,10 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTS);
         }
         User user = userMapper.toUser(request);
+        //---------- bcrypt password encoding ----------
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        //---------- end bcrypt password encoding ----------
         return userRepository.save(user);
     }
 
