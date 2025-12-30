@@ -7,6 +7,7 @@ import vn.back_end_best_practice.dto.request.UserCreationRequest;
 import vn.back_end_best_practice.entity.User;
 import vn.back_end_best_practice.exception.AppException;
 import vn.back_end_best_practice.exception.ErrorCode;
+import vn.back_end_best_practice.mapper.UserMapper;
 import vn.back_end_best_practice.repository.UserRepository;
 
 import java.util.List;
@@ -18,18 +19,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser(UserCreationRequest request) {
-        User user = new User();
+    @Autowired
+    private UserMapper userMapper;
 
+    public User createUser(UserCreationRequest request) {
         if(userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTS);
         }
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDateOfBirth(request.getDateOfBirth());
+        User user = userMapper.toUser(request);
         return userRepository.save(user);
     }
 
