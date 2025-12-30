@@ -4,6 +4,7 @@ public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
     USER_EXISTS( 1002 ,"User already exists"),
     METHOD_NOT_ALLOWED( 405 ,"Method not allowed"),
+    UNAUTHENTICATED( 401 ,"Unauthenticated"),
     NOT_FOUND( 404 ,"Resource not found");
 
     ErrorCode(int code, String message) {
