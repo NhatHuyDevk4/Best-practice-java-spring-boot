@@ -1,5 +1,6 @@
 package vn.back_end_best_practice.controller;
 
+import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -8,9 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.back_end_best_practice.dto.request.AuthenticationRequest;
+import vn.back_end_best_practice.dto.request.IntrospectRequest;
 import vn.back_end_best_practice.dto.response.AuthenticationResponse;
+import vn.back_end_best_practice.dto.response.IntrospectResponse;
 import vn.back_end_best_practice.dto.response.ResponseData;
 import vn.back_end_best_practice.service.AuthenticationService;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,6 +29,14 @@ public class AuthenicationController {
     ResponseData<AuthenticationResponse> login(@RequestBody AuthenticationRequest authenticationRequest) {
         var result = authenticationService.authenticate(authenticationRequest);
         return ResponseData.<AuthenticationResponse>builder()
+                .data(result)
+                .build();
+    }
+
+    @PostMapping("/introspect")
+    ResponseData<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+        var result = authenticationService.introspect(request);
+        return ResponseData.<IntrospectResponse>builder()
                 .data(result)
                 .build();
     }
