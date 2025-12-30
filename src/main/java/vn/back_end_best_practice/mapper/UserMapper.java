@@ -1,12 +1,15 @@
 package vn.back_end_best_practice.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import vn.back_end_best_practice.dto.request.UserCreationRequest;
+import vn.back_end_best_practice.dto.request.UserUpdateRequest;
 import vn.back_end_best_practice.entity.User;
 
 @Mapper(componentModel = "spring") // Đánh dấu đây là một MapStruct mapper
 public interface UserMapper {
     User toUser(UserCreationRequest request);
+    User updateUserFromRequest(@MappingTarget User user, UserUpdateRequest request);
 }
 
 
