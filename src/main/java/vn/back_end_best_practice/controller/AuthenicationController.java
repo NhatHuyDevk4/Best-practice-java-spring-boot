@@ -22,9 +22,9 @@ public class AuthenicationController {
 
     @PostMapping("/login")
     ResponseData<AuthenticationResponse> login(@RequestBody AuthenticationRequest authenticationRequest) {
-        boolean result = authenticationService.authenticate(authenticationRequest);
+        var result = authenticationService.authenticate(authenticationRequest);
         return ResponseData.<AuthenticationResponse>builder()
-                .data(new AuthenticationResponse(result))
+                .data(result)
                 .build();
     }
 }
