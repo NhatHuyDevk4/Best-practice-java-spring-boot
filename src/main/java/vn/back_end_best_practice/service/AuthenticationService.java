@@ -15,10 +15,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.back_end_best_practice.dto.request.AuthenticationRequest;
 import vn.back_end_best_practice.dto.request.IntrospectRequest;
 import vn.back_end_best_practice.dto.response.AuthenticationResponse;
 import vn.back_end_best_practice.dto.response.IntrospectResponse;
+import vn.back_end_best_practice.entity.User;
 import vn.back_end_best_practice.exception.AppException;
 import vn.back_end_best_practice.exception.ErrorCode;
 import vn.back_end_best_practice.repository.UserRepository;
@@ -26,7 +28,9 @@ import vn.back_end_best_practice.repository.UserRepository;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +54,7 @@ public class AuthenticationService {
              throw new AppException(ErrorCode.UNAUTHENTICATED);
          }
 
-         var token = generateToken(user.getUsername());
+         var token = generateToken(user);
 
          return AuthenticationResponse.builder()
                  .token(token)
@@ -58,7 +62,7 @@ public class AuthenticationService {
                  .build();
     }
 
-    private String generateToken(String username) {
+    private String generateToken(User user) {
 
         // Generate JWT token
         // header dùng để mô tả thuật toán mã hóa và các thông tin khác về token
@@ -66,13 +70,13 @@ public class AuthenticationService {
 
         // payload chứa các thông tin về người dùng và các tuyên bố (claims)
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("NhatHuyDev.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("userId", username) // Thêm các tuyên bố (claims) tùy chỉnh vào token, ví dụ như userId
+                .claim("scope", buildScope(user)) // Thêm các tuyên bố (claims) tùy chỉnh vào token, ví dụ như userId
                 .build();
 
         // Này là phần dữ liệu chính của token, chứa các tuyên bố (claims) đã được định nghĩa trong JWTClaimsSet
@@ -88,6 +92,23 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
+
+
+    // Mục đích của phương thức này là để xây dựng một chuỗi (string) đại diện cho phạm vi (scope) của người dùng dựa trên các vai trò (role) mà người dùng đó sở hữu.
+    private String buildScope(User user){
+        // stringJoiner là một lớp trong Java được sử dụng để xây dựng một chuỗi (string) bằng cách nối các phần tử với một ký tự phân tách (delimiter) cụ thể.
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        // Kiểm tra nếu tập hợp vai trò (role) của người dùng không rỗng
+        if (!CollectionUtils.isEmpty(user.getRole())){
+            // Duyệt qua từng vai trò (role) và thêm vào stringJoiner
+            user.getRole().forEach(stringJoiner::add);
+            // stringJoiner::add là một method reference trong Java, tương đương với việc sử dụng lambda expression như sau: role -> stringJoiner.add(role)
+        }
+
+        // Trả về chuỗi đã được xây dựng
+        return stringJoiner.toString();
+    }
+
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         String token = request.getToken();
