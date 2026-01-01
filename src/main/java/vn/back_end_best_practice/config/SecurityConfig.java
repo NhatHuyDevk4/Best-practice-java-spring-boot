@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,10 +24,12 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
             "/auth/**",
+            "/user/**"  // Cho phép đăng ký người dùng mới mà không cần xác thực
     };
 
     @Value("${jwt.signerKey}")
@@ -36,8 +39,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/user/**")
-                        .hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated());
 
         // oauth2ResourceServer de cau hinh spring security su dung JWT de xac thuc nguoi dung
