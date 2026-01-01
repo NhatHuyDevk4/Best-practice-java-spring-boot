@@ -14,6 +14,7 @@ import vn.back_end_best_practice.config.SecurityConfig;
 import vn.back_end_best_practice.dto.request.UserCreationRequest;
 import vn.back_end_best_practice.dto.request.UserUpdateRequest;
 import vn.back_end_best_practice.dto.response.ResponseData;
+import vn.back_end_best_practice.dto.response.UserResponse;
 import vn.back_end_best_practice.entity.User;
 import vn.back_end_best_practice.service.UserService;
 
@@ -79,5 +80,12 @@ public class UserContoller {
     ResponseData<Void> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return new ResponseData<>(HttpStatus.OK.value(), "User deleted successfully", null);
+   }
+
+   @GetMapping("/my-info")
+    ResponseData<UserResponse> getMyInfo() {
+        UserResponse userResponse = userService.getMyInfo();
+        log.info("In method getMyInfo - UserController" + userResponse);
+        return new ResponseData<>(HttpStatus.OK.value(), "Fetched my info successfully", userResponse);
    }
 }
