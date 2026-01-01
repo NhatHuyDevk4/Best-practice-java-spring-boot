@@ -5,9 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import vn.back_end_best_practice.config.SecurityConfig;
 import vn.back_end_best_practice.dto.request.UserCreationRequest;
 import vn.back_end_best_practice.dto.request.UserUpdateRequest;
 import vn.back_end_best_practice.dto.response.ResponseData;
@@ -16,6 +19,7 @@ import vn.back_end_best_practice.service.UserService;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 @Tag(name = "User Controller", description = "APIs for user management")
@@ -54,6 +58,11 @@ public class UserContoller {
 
    @GetMapping("/list")
     ResponseData<List<UserCreationRequest>> getListUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("Username: {}", authentication.getName());
+        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+
          List<User> users = userService.getAllUsers();
          List<UserCreationRequest> userCreationRequests = users.stream().map(user -> UserCreationRequest.builder()
                 .username(user.getUsername())
